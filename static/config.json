@@ -1,0 +1,11 @@
+{
+    "main_frame":{
+        "width":454,
+        "height":469,
+        "title":"music_player",
+        "icon":"main_frame.ico",
+        "fg_color":"#4cb7ce"
+
+
+    }
+}
