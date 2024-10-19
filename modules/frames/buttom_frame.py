@@ -4,7 +4,9 @@ from ..jmages.get_images import image_add_song, image_del_song , image_mix_songs
 from pygame import mixer
 import os
 from customtkinter import filedialog
-from .frame_for_songs import frame_treks , list_songs
+import random as r
+from .frame_for_songs import frame_treks , list_songs 
+from .side_frame import check_music
 
 mixer.init()
 
@@ -48,6 +50,7 @@ def add_volume():
     if volume > 1.1:
         volume = 1
         mixer.music.set_volume(volume)
+
 def minus_volume():
     global volume
     volume -= 0.1
@@ -57,6 +60,23 @@ def minus_volume():
         volume = 0
         mixer.music.set_volume(volume)
     
+
+
+def random_song():
+    global check_music
+    if check_music == True:
+        random_number = r.randint(0, len(list_songs) - 1)
+        mixer.music.load(list_songs[random_number])
+        mixer.music.play()
+        random_number_for_next_song = r.randint(0, len(list_songs) - 1)
+        if random_number == random_number_for_next_song:
+            random_number_for_next_song += 1
+            if random_number_for_next_song > len(list_songs) - 1:
+                random_number_for_next_song = 0
+        mixer.music.queue(list_songs[random_number_for_next_song])
+
+
+
 
 #настройка колонок и рядков для растановки кнопок
 frame_buttom.columnconfigure((0,1,2,3,4), weight = 1) #| | | | |
@@ -68,7 +88,7 @@ buttom_add.grid(row = 0 , column = 0 , padx = (0 , 25))
 buttom_delete = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_del_song , anchor = "center")
 buttom_delete.grid(row = 0 , column = 1 , padx = (0 , 25))
 
-buttom_mix = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_mix_songs , anchor = "center")
+buttom_mix = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_mix_songs , anchor = "center", command = random_song) 
 buttom_mix.grid(row = 0 , column = 2, padx = (0 , 25))
 
 button_sound_up = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_sound_up , anchor = "center", command = add_volume)
