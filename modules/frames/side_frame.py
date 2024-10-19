@@ -18,39 +18,50 @@ frame_bar.columnconfigure(0 , weight= 1) # | вертикальные колон
 frame_bar.rowconfigure((0 , 1, 2, 3,), weight = 1) # - - - - -  горизонтальные колоны
 
 def next_song():
-    global number_song, check_music 
-    mixer.music.stop()
-    print(number_song , "hahah")
-    #добалвяем к переменной которая отслеживает какая музыка играет единичку чтобы начала играть следущая песня
-    number_song += 1
-    #если эта переменная стала боьлше чем длина списка где хранятся название песен , то переменная обнулялась и начинала играть заново
-    if number_song > len(list_songs) - 1:
-        number_song = 0
-    
-    #берем название песни которая сейчас должна играть
-    song_name = list_songs[number_song]
-    #загружаем музыку которую нужно играть , и включаем ее
-    mixer.music.load(song_name)
-    mixer.music.play()
-    #тут мы записываем на False нашу переменную чтобы когда пользователь нажал на плей музыка начала играть с того момента где был стоп
-    check_music = False
+    try:
+        global number_song, check_music 
+        mixer.music.stop()
+        print(number_song , "hahah")
+        #добалвяем к переменной которая отслеживает какая музыка играет единичку чтобы начала играть следущая песня
+        number_song += 1
+        #если эта переменная стала боьлше чем длина списка где хранятся название песен , то переменная обнулялась и начинала играть заново
+        if number_song > len(list_songs) - 1:
+            number_song = 0
+        
+        #берем название песни которая сейчас должна играть
+        song_name = list_songs[number_song]
+        #загружаем музыку которую нужно играть , и включаем ее
+        mixer.music.load(song_name)
+        mixer.music.play()
+        #тут мы записываем на False нашу переменную чтобы когда пользователь нажал на плей музыка начала играть с того момента где был стоп
+        check_music = False
+        name , file = song_name.split(".mp3")
+        label_track_name.configure(text = str(name))
+    except IndexError:
+        print("You don't have any nusic yet")
 
 def prev_music():
-    global number_song, check_music 
-    mixer.music.stop()
-    print(number_song , "hahah")
-     #отнимаем от переменной которая отслеживает какая музыка играет единичку чтобы начала играть следущая песня
-    number_song -= 1
-    #если эта переменная стала меньше нуля , то в переменную записывается номер последней песни чтобы начинала играть последняя песня(переход с первой на последнюю песню)
-    if number_song < 0:
-        number_song = len(list_songs) - 1
+    try:
+        global number_song, check_music 
+        mixer.music.stop()
+        
+        #отнимаем от переменной которая отслеживает какая музыка играет единичку чтобы начала играть следущая песня
+        number_song -= 1
+        #если эта переменная стала меньше нуля , то в переменную записывается номер последней песни чтобы начинала играть последняя песня(переход с первой на последнюю песню)
+        if number_song < 0:
+            number_song = len(list_songs) - 1
+        print(number_song , "hahah")
 
-    #берем название песни которая сейчас должна играть  и включаем ее
-    song_name = list_songs[number_song]
-    mixer.music.load(song_name)
-    mixer.music.play()
-    #тут мы записываем на False нашу переменную чтобы когда пользователь нажал на плей музыка начала играть с того момента где был стоп
-    check_music = False
+        #берем название песни которая сейчас должна играть  и включаем ее
+        song_name = list_songs[number_song]
+        mixer.music.load(song_name)
+        mixer.music.play()
+        #тут мы записываем на False нашу переменную чтобы когда пользователь нажал на плей музыка начала играть с того момента где был стоп
+        check_music = False
+        name , file = song_name.split(".mp3")
+        label_track_name.configure(text = str(name))
+    except IndexError:
+        print("You don't have any nusic yet")
 
 
   
@@ -65,7 +76,6 @@ def stop_song():
 
 def pause_song():
     global check_music,number_song
-    print(number_song , "number song")
     #проверка если пользователь нажал сканала на кнопку stop и потом "случайно" на кнопку паузы то когда человек нажмет на старт то музыка начинала все равно играть
     if check_music == True:
         pass
@@ -76,6 +86,9 @@ def pause_song():
         print(check_music)
     
 
+#создание label для название трэка который играет
+label_track_name = ctk.CTkLabel(master = app, text = "Ще немає ввімкненої пісні", font = ("Inter", 16),  width = 160 , height = 59, text_color = "white")
+label_track_name.place(x = 270, y = 15)
 
 def play_song():
     global number_song , check_music 
@@ -84,6 +97,8 @@ def play_song():
     if check_music == True:
         for music in list_songs:
             print(music)
+            name , file = music.split(".mp3")
+            label_track_name.configure(text = str(name))
             #загружаем и включаем первую песню
             mixer.music.load(music)
             mixer.music.play()
@@ -94,25 +109,13 @@ def play_song():
     #если chek_music равно False то мы не заново включаем музыку(с самого начала) а просто снимаем с паузы чтобы она начинала играть где и останановаилась в последний момент.
     elif check_music == False:
         mixer.music.unpause()
+
+    #если chek_music равно False то мы не заново включаем музыку(с самого начала) а просто снимаем с паузы чтобы она начинала играть где и останановаилась в последний момент.
+    elif check_music == False:
+        mixer.music.unpause()
         
     
-        
-    # print(check_music, "check_music")   
-    # try:
-    #     if check_music == True:
-    #         if number_song > len(list_songs) - 1:
-    #             number_song = 0
-    #         # print(number_song, "number song")
-    #         # print(len(list_songs), "number list items")
-    #         song_name = list_songs[number_song]
-    #         mixer.music.load(song_name)
-    #         mixer.music.play()
-    #         number_song += 1
-    #         check_music = True
-    #     elif check_music == False:
-    #         mixer.music.unpause()
-    # except IndexError:
-    #     print("You don't have any songs yet")
+
 
 #создание кнопок для фрейма frame_bar
 button_play = ctk.CTkButton(master= frame_bar , text = "",width = 169 , height = 60 , fg_color= "#bdbdbd" , border_color = "black", corner_radius= 20 , border_width= 4 , image= image_play , anchor = "center",command=play_song)
@@ -131,3 +134,4 @@ button_pause.grid(row = 2 , column = 0 , pady = 10)
 button_stop = ctk.CTkButton(master = frame_bar , text = "", width = 169 , height = 60 , fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_stop , anchor= "center", command = stop_song)
 #в 57 строке делаем отступ только сверху от кнопки с помощью такой записи pady = (10 , 0)
 button_stop.grid(row = 3 , column = 0 , pady = (10 , 0))
+

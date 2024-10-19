@@ -38,7 +38,25 @@ def open_songs():
                 list_songs.append(song)
                 # frame_treks._label_text = str(list_songs)
 
-
+volume = mixer.music.get_volume()
+mixer.music.set_volume(1)
+def add_volume():
+    global volume
+    volume += 0.1
+    mixer.music.set_volume(volume)
+    print(volume)
+    if volume > 1.1:
+        volume = 1
+        mixer.music.set_volume(volume)
+def minus_volume():
+    global volume
+    volume -= 0.1
+    mixer.music.set_volume(volume)
+    print(volume)
+    if volume < 0.01:
+        volume = 0
+        mixer.music.set_volume(volume)
+    
 
 #настройка колонок и рядков для растановки кнопок
 frame_buttom.columnconfigure((0,1,2,3,4), weight = 1) #| | | | |
@@ -53,10 +71,10 @@ buttom_delete.grid(row = 0 , column = 1 , padx = (0 , 25))
 buttom_mix = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_mix_songs , anchor = "center")
 buttom_mix.grid(row = 0 , column = 2, padx = (0 , 25))
 
-button_sound_up = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_sound_up , anchor = "center")
+button_sound_up = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_sound_up , anchor = "center", command = add_volume)
 button_sound_up.grid(row = 0 , column = 3 , padx = (0 , 25))
 
-button_sound_down = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_sound_down , anchor = "center")
+button_sound_down = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_sound_down , anchor = "center", command = minus_volume)
 button_sound_down.grid(row = 0 , column = 4)
 
 
