@@ -6,7 +6,7 @@ import os
 from customtkinter import filedialog
 import random as r
 from .frame_for_songs import frame_treks , list_songs 
-from .side_frame import check_music
+
 
 mixer.init()
 
@@ -20,9 +20,9 @@ frame_buttom.place(x = 25 , y = 397)
 def open_songs():
     path = filedialog.askdirectory()
     #проверка на то что выбрал ли пользователь директорию (если путь не пустой)
-    if path:
+    if path != None:
         name = ""
-        #chdir - команда меняет текущую рабочую директорию на указанную в переменной path , чтобы pygame мог проигрывать музыку по названию, короче меняем путь нашего файла на путь к папке где музыка
+        #chdir - команда меняет текущую рабочую директорию на указанную в переменной path , чтобы pygame мог проигрывать музыку по названию
         os.chdir(path)
         print(path)
         #listdir - команда возвращает список файлов и папок, находящихся в указанной директории path
@@ -39,42 +39,28 @@ def open_songs():
                 #добавляем музыку в список
                 list_songs.append(song)
                 # frame_treks._label_text = str(list_songs)
+            # list_songs.remove('.DS_Store')
 
 volume = mixer.music.get_volume()
-mixer.music.set_volume(1)
+list_for_volume = [volume]
+mixer.music.set_volume(list_for_volume[0])
+
 def add_volume():
-    global volume
-    volume += 0.1
-    mixer.music.set_volume(volume)
-    print(volume)
-    if volume > 1.1:
-        volume = 1
-        mixer.music.set_volume(volume)
+    list_for_volume[0] += 0.1
+    mixer.music.set_volume(list_for_volume[0])
+    print(list_for_volume[0])
+    if list_for_volume[0] > 1.1:
+        list_for_volume[0] = 1
+        mixer.music.set_volume(list_for_volume[0])
 
 def minus_volume():
-    global volume
-    volume -= 0.1
-    mixer.music.set_volume(volume)
-    print(volume)
-    if volume < 0.01:
-        volume = 0
-        mixer.music.set_volume(volume)
+    list_for_volume[0] -= 0.1
+    mixer.music.set_volume(list_for_volume[0])
+    print(list_for_volume[0])
+    if list_for_volume[0] < 0.01:
+        list_for_volume[0] = 0
+        mixer.music.set_volume(list_for_volume[0])
     
-
-
-def random_song():
-    global check_music
-    if check_music == True:
-        random_number = r.randint(0, len(list_songs) - 1)
-        mixer.music.load(list_songs[random_number])
-        mixer.music.play()
-        random_number_for_next_song = r.randint(0, len(list_songs) - 1)
-        if random_number == random_number_for_next_song:
-            random_number_for_next_song += 1
-            if random_number_for_next_song > len(list_songs) - 1:
-                random_number_for_next_song = 0
-        mixer.music.queue(list_songs[random_number_for_next_song])
-
 
 
 
@@ -82,19 +68,70 @@ def random_song():
 frame_buttom.columnconfigure((0,1,2,3,4), weight = 1) #| | | | |
 frame_buttom.rowconfigure(0 , weight = 1) # -
 
-buttom_add = ctk.CTkButton(master = frame_buttom , text= "" ,width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_add_song , anchor = "center" , command = open_songs)
+buttom_add = ctk.CTkButton(master = frame_buttom , 
+                           text= "" ,
+                           width = 61 , 
+                           height = 58, 
+                           fg_color= "#bdbdbd", 
+                           border_color = "black" , 
+                           corner_radius = 20, 
+                           border_width = 4, 
+                           image = image_add_song , 
+                           anchor = "center" , 
+                           command = open_songs)
 buttom_add.grid(row = 0 , column = 0 , padx = (0 , 25))
 
-buttom_delete = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_del_song , anchor = "center")
+buttom_delete = ctk.CTkButton(master = frame_buttom , 
+                              text= "" , 
+                              width = 61 , 
+                              height = 58, 
+                              fg_color= "#bdbdbd", 
+                              border_color = "black" , 
+                              corner_radius = 20, 
+                              border_width = 4, 
+                              image = image_del_song , 
+                              anchor = "center")
 buttom_delete.grid(row = 0 , column = 1 , padx = (0 , 25))
 
-buttom_mix = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_mix_songs , anchor = "center", command = random_song) 
+buttom_mix = ctk.CTkButton(master = frame_buttom , 
+                           text= "" , 
+                           width = 61 , 
+                           height = 58, 
+                           fg_color= "#bdbdbd", 
+                           border_color = "black" , 
+                           corner_radius = 20, 
+                           border_width = 4, 
+                           image = image_mix_songs , 
+                           anchor = "center", 
+                           ) 
 buttom_mix.grid(row = 0 , column = 2, padx = (0 , 25))
 
-button_sound_up = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_sound_up , anchor = "center", command = add_volume)
+button_sound_up = ctk.CTkButton(master = frame_buttom , 
+                                text= "" , 
+                                width = 61 , 
+                                height = 58, 
+                                fg_color= "#bdbdbd", 
+                                border_color = "black" , 
+                                corner_radius = 20, 
+                                border_width = 4, 
+                                image = image_sound_up , 
+                                anchor = "center", 
+                                command = add_volume
+                                )
 button_sound_up.grid(row = 0 , column = 3 , padx = (0 , 25))
 
-button_sound_down = ctk.CTkButton(master = frame_buttom , text= "" , width = 61 , height = 58, fg_color= "#bdbdbd", border_color = "black" , corner_radius = 20, border_width = 4, image = image_sound_down , anchor = "center", command = minus_volume)
+button_sound_down = ctk.CTkButton(master = frame_buttom , 
+                                  text= "" , 
+                                  width = 61 , 
+                                  height = 58, 
+                                  fg_color= "#bdbdbd", 
+                                  border_color = "black" , 
+                                  corner_radius = 20, 
+                                  border_width = 4, 
+                                  image = image_sound_down , 
+                                  anchor = "center", 
+                                  command = minus_volume
+                                  )
 button_sound_down.grid(row = 0 , column = 4)
 
 
