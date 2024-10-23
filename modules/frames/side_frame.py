@@ -4,7 +4,7 @@ from ..jmages.get_images import image_next_song , image_prev_song , image_pause 
 from pygame import mixer
 import pygame
 from .frame_for_songs import list_songs
-import time as t 
+from threading import Thread
 
 pygame.init()
 
@@ -20,23 +20,30 @@ frame_bar.columnconfigure(0 , weight= 1) # | вертикальные колон
 frame_bar.rowconfigure((0 , 1, 2, 3,), weight = 1) # - - - - -  горизонтальные колоны
 
 print(list_songs)
-list_music = []
-start = []
+# list_music = []
+# start = []
 
 def play_song():
-    start.append(1) 
+    # start.append(1) 
     # for trak in list_songs:
     #     list_music.append(pygame.mixer.Sound(trak))
       
-    k = pygame.mixer.Channel(1)
-
     for song in list_songs:
+        name , file = song.split(".mp3")
+        label_for_show_name.configure(text = name)
         mixer.music.load(song)
         mixer.music.play()
         while pygame.mixer.music.get_busy():   
             pygame.time.Clock().tick(100)
         
         pygame.mixer.music.stop()
+
+def play_theread():
+    play = Thread(target = play_song)
+    play.start()
+
+label_for_show_name = ctk.CTkLabel(master = app, text = "Пісня ще не грає" ,width = 160, height = 15 , font = ("Inter" , 16) , text_color = "#FFFFFF")
+label_for_show_name.place(x = 270, y = 30)
 
 #создание кнопок для фрейма frame_bar
 button_play = ctk.CTkButton(master= frame_bar ,
@@ -49,7 +56,7 @@ button_play = ctk.CTkButton(master= frame_bar ,
                              border_width= 4 , 
                              image= image_play , 
                              anchor = "center",
-                             command=play_song)
+                             command = play_theread)
 
 #в  строке делаем отступ только с низу с помощью такой стурктуры записи pady = (0 , 10)
 button_play.grid(row = 0 , column = 0 , pady = (0 , 10))
