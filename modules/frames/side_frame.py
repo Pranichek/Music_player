@@ -1,10 +1,10 @@
 import customtkinter as ctk
 from .main_frame import app
 from ..jmages.get_images import image_next_song , image_prev_song , image_pause , image_stop, image_play
-from pygame import mixer
 import pygame
 from .frame_for_songs import list_songs
-from threading import Thread
+from threading import Thread 
+import threading
 
 pygame.init()
 
@@ -20,30 +20,53 @@ frame_bar.columnconfigure(0 , weight= 1) # | вертикальные колон
 frame_bar.rowconfigure((0 , 1, 2, 3,), weight = 1) # - - - - -  горизонтальные колоны
 
 print(list_songs)
-# list_music = []
-# start = []
+
+event_pause = threading.Event()
+event_pause.set()
 
 def play_song():
-    # start.append(1) 
-    # for trak in list_songs:
-    #     list_music.append(pygame.mixer.Sound(trak))
-      
-    for song in list_songs:
-        name , file = song.split(".mp3")
-        label_for_show_name.configure(text = name)
-        mixer.music.load(song)
-        mixer.music.play()
-        while pygame.mixer.music.get_busy():   
-            pygame.time.Clock().tick(100)
-        
-        pygame.mixer.music.stop()
+    #если песня была поставлена на паузы и мы опять нажали на играть, то чтобы песня начала играть с последнего момента  остоновки
+    if not event_pause.is_set():
+        #задаем True into event_pause(говорим что сняли песню с паузы)
+        event_pause.set()
+        pygame.mixer.music.unpause()
+    #если музыка не была на паузе то просто отгрываем каждую песню по очереди 
+    else:
+        for song in list_songs:
+            name , file = song.split(".mp3")
+            label_for_show_name.configure(text = name)
+            pygame.mixer.music.load(song)
+            pygame.mixer.music.play()
+            #делаем бесконченый цикл чтобы музыка могла играть , а не сразу остонавливаться
+            #если бы его не было , то музыка сразу после включения останавливалась бы либо переклюичалась на другую
+            while pygame.mixer.music.get_busy():   
+                pygame.time.Clock().tick(100)
 
+                #елси включили песню играть , и в моменте постаивли на паузу, то останавливаем песню и ждем пока пауза будет снята
+                if not event_pause.is_set():
+                    pygame.mixer.music.pause()
+                    #отсонавливаем поток, и он продолжиться чтолько в том случаем когда в evebt_pause будет True(event_pause.set()) , то есть снимем с паузы
+                    event_pause.wait()
+
+            pygame.mixer.music.stop()
+
+#созадем поток для того тчобы музыка могла играть без бесконечной загрузки
 def play_theread():
     play = Thread(target = play_song)
     play.start()
+    
+    
+#если event_pause False то это значит пауза
+def pause_music():
+    #проверяем поставлена ли пауза,находится True значит что пауза не поставлен
+    if event_pause.is_set(): 
+        #если нажали на паузы то ставим false в event_pause и говорим что сейчас пауза
+        event_pause.clear()  
+        pygame.mixer.music.pause() 
 
-label_for_show_name = ctk.CTkLabel(master = app, text = "Пісня ще не грає" ,width = 160, height = 15 , font = ("Inter" , 16) , text_color = "#FFFFFF")
-label_for_show_name.place(x = 270, y = 30)
+    
+       
+        
 
 #создание кнопок для фрейма frame_bar
 button_play = ctk.CTkButton(master= frame_bar ,
@@ -96,8 +119,10 @@ button_pause = ctk.CTkButton(master = frame_bar ,
                             corner_radius = 20, 
                             border_width = 4, 
                             image = image_pause , 
-                            anchor = "center", 
+                            anchor = "center",
+                            command = pause_music,
                             )
+                            
 button_pause.grid(row = 2 , column = 0 , pady = 10)
 
 button_stop = ctk.CTkButton(master = frame_bar , 
@@ -114,3 +139,6 @@ button_stop = ctk.CTkButton(master = frame_bar ,
 #в 57 строке делаем отступ только сверху от кнопки с помощью такой записи pady = (10 , 0)
 button_stop.grid(row = 3 , column = 0 , pady = (10 , 0))
 
+#Создаем лейбл для отображения какая музыка сейчас играет
+label_for_show_name = ctk.CTkLabel(master = app, text = "Пісня ще не грає" ,width = 160, height = 15 , font = ("Inter" , 16) , text_color = "#FFFFFF")
+label_for_show_name.place(x = 270, y = 30)
