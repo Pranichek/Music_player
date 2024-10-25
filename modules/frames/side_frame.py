@@ -24,6 +24,8 @@ print(list_songs)
 event_pause = threading.Event()
 event_pause.set()
 
+list_check_stop = [0]
+
 def play_song():
     #если песня была поставлена на паузы и мы опять нажали на играть, то чтобы песня начала играть с последнего момента  остоновки
     if not event_pause.is_set():
@@ -32,11 +34,14 @@ def play_song():
         pygame.mixer.music.unpause()
     #если музыка не была на паузе то просто отгрываем каждую песню по очереди 
     else:
+        
         for song in list_songs:
+            
             name , file = song.split(".mp3")
             label_for_show_name.configure(text = name)
             pygame.mixer.music.load(song)
             pygame.mixer.music.play()
+
             #делаем бесконченый цикл чтобы музыка могла играть , а не сразу остонавливаться
             #если бы его не было , то музыка сразу после включения останавливалась бы либо переклюичалась на другую
             while pygame.mixer.music.get_busy():   
@@ -50,6 +55,16 @@ def play_song():
 
             pygame.mixer.music.stop()
 
+            #если в списке гаходится 1 то значит что был нажата кнопка стоп
+            if list_check_stop[0] > 0:
+                #останавливаем песни еще раз на всякий случай
+                pygame.mixer.music.stop()
+                #обнуляем список для отслеживания паузы
+                list_check_stop[0] = 0
+                #выходим из цикла
+                break
+             
+
 #созадем поток для того тчобы музыка могла играть без бесконечной загрузки
 def play_theread():
     play = Thread(target = play_song)
@@ -58,11 +73,21 @@ def play_theread():
     
 #если event_pause False то это значит пауза
 def pause_music():
-    #проверяем поставлена ли пауза,находится True значит что пауза не поставлен
+    #проверяем поставлена ли пауза,находится True значит что пауза не поставлена
     if event_pause.is_set(): 
         #если нажали на паузы то ставим false в event_pause и говорим что сейчас пауза
         event_pause.clear()  
         pygame.mixer.music.pause() 
+
+
+def stop_music():
+     #проверяем поставлена ли пауза,находится True значит что пауза не поставлена, это чтобы если ми нажали сначала на паузу и потом на стоп, то песня все ранво играла с последнего момента
+    if event_pause.is_set():
+        #остонавливаем песни
+        pygame.mixer.music.stop()
+        #прибавляем 1 к списку чтобы могли отслеживать поставлена ли пауза
+        list_check_stop[0] += 1
+
 
     
        
@@ -135,6 +160,7 @@ button_stop = ctk.CTkButton(master = frame_bar ,
                             border_width = 4, 
                             image = image_stop , 
                             anchor= "center", 
+                            command = stop_music
                             )
 #в 57 строке делаем отступ только сверху от кнопки с помощью такой записи pady = (10 , 0)
 button_stop.grid(row = 3 , column = 0 , pady = (10 , 0))
