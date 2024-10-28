@@ -1,3 +1,4 @@
+import pygame
 import customtkinter as ctk
 from .main_frame import app
 from ..jmages.get_images import image_add_song, image_del_song , image_mix_songs , image_sound_up , image_sound_down
@@ -6,11 +7,10 @@ from customtkinter import filedialog
 import random as r
 from .frame_for_songs import frame_treks , list_songs 
 from .side_frame import event_pause , list_check_stop , label_for_show_name
-import pygame
 from threading import Thread 
 
 
-pygame.init()
+pygame.mixer.init()
 
 
 
@@ -25,16 +25,21 @@ def open_songs():
         #listdir - команда возвращает список файлов и папок, находящихся в указанной директории path
         songs = os.listdir(path)
         print(songs)
+        #находим середину фрейма чтобы название песен стояли ровно по середине
+        x = (233 - 173) // 2
+        y = 20
         for song in songs:
             #проверка на то что это файл и он имеет расширение ".mp3" (если это так, то добавляем его в список)  
             if song.endswith(".mp3"):
                 #если это так, то разбиваем имя файла на имя и расширение (name , file), split(".mp3") разбивает имя файла на имя и расширение) 
                 name , file = song.split(".mp3")
                 #создаем новый лейбл с названием музыки и добавляем в окно где отображаются название трэков
-                label = ctk.CTkLabel(frame_treks , text = name)
-                label.pack(pady = 10)
+                label = ctk.CTkLabel(frame_treks , text = name ,width = 173) 
+                #установка позиции лейбла в фрейме , используем place чтобы фрейм не стягивался
+                label.place(x = x , y = y)
                 #добавляем музыку в список
                 list_songs.append(song)
+                y += 40
                 # frame_treks._label_text = str(list_songs)
             # list_songs.remove('.DS_Store')
 

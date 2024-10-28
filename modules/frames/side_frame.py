@@ -1,18 +1,16 @@
+import pygame
 import customtkinter as ctk
 from .main_frame import app
 from ..jmages.get_images import image_next_song , image_prev_song , image_pause , image_stop, image_play
 from .frame_for_songs import list_songs
-import threading
-import pygame
-from threading import Thread 
+from threading import Thread , Event
 
-pygame.init()
+pygame.mixer.init()
 
 list_for_count_song = [0]
 
 
-
-event_pause = threading.Event()
+event_pause = Event()
 event_pause.set()
 
 list_check_stop = [0]
