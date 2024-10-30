@@ -4,7 +4,8 @@ from .main_frame import app
 list_songs = []
 
 #фрейм для демонстрации трэков которые добавлены
-frame_treks = ctk.CTkScrollableFrame(app, width = 200, 
+frame_treks = ctk.CTkScrollableFrame(master = app, 
+                                     width = 200, 
                                      height = 300 , 
                                      corner_radius = 20 , 
                                      border_color= "black", 

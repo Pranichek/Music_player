@@ -19,13 +19,23 @@ frame_bar.place(x = 268 , y = 83)
 frame_bar.columnconfigure(0 , weight= 1) # | вертикальные колоны
 frame_bar.rowconfigure((0 , 1, 2, 3,), weight = 1) # - - - - -  горизонтальные колоны
 
-print(list_songs)
 
 event_pause = threading.Event()
 event_pause.set()
 
-list_check_stop = [0]
 
+# def next_song():   
+#     list_for_count_song[0] += 1
+#     if list_for_count_song[0] >= len(list_songs):
+#         list_for_count_song[0] = 0
+#     pygame.mixer.music.load(list_songs[list_for_count_song[0]])
+#     pygame.mixer.music.play()
+#     name , file = list_songs[list_for_count_song[0]].split(".mp3")
+#     label_for_show_name.configure(text = name)
+#     event_pause.set()
+
+#список для проверки остановки песни
+list_check_stop = [0]
 def play_song():
     #если песня была поставлена на паузы и мы опять нажали на играть, то чтобы песня начала играть с последнего момента  остоновки
     if not event_pause.is_set():
@@ -34,9 +44,7 @@ def play_song():
         pygame.mixer.music.unpause()
     #если музыка не была на паузе то просто отгрываем каждую песню по очереди 
     else:
-        
         for song in list_songs:
-            
             name , file = song.split(".mp3")
             label_for_show_name.configure(text = name)
             pygame.mixer.music.load(song)
@@ -52,9 +60,11 @@ def play_song():
                     pygame.mixer.music.pause()
                     #отсонавливаем поток, и он продолжиться чтолько в том случаем когда в evebt_pause будет True(event_pause.set()) , то есть снимем с паузы
                     event_pause.wait()
+            # if not pygame.mixer.music.get_busy():
+            #     list_for_count_song[0] += 1
 
             pygame.mixer.music.stop()
-
+            
             #если в списке гаходится 1 то значит что был нажата кнопка стоп
             if list_check_stop[0] > 0:
                 #останавливаем песни еще раз на всякий случай
@@ -63,7 +73,7 @@ def play_song():
                 list_check_stop[0] = 0
                 #выходим из цикла
                 break
-             
+            
 
 #созадем поток для того тчобы музыка могла играть без бесконечной загрузки
 def play_theread():
@@ -89,7 +99,9 @@ def stop_music():
         list_check_stop[0] += 1
 
 
+
     
+
        
         
 
