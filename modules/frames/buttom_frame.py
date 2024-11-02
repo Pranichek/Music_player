@@ -33,15 +33,56 @@ def open_songs():
             if song.endswith(".mp3"):
                 #если это так, то разбиваем имя файла на имя и расширение (name , file), split(".mp3") разбивает имя файла на имя и расширение) 
                 name , file = song.split(".mp3")
-                #создаем новый лейбл с названием музыки и добавляем в окно где отображаются название трэков
-                label = ctk.CTkLabel(frame_treks , text = name ,width = 173) 
-                #установка позиции лейбла в фрейме , используем place чтобы фрейм не стягивался
-                label.place(x = x , y = y)
-                #добавляем музыку в список
+                button = ctk.CTkButton(master= frame_treks , text = name , command=lambda name_of_button = name:change_name_button(name_of_button= name_of_button))
+
+                list_for_button.append(button)
                 list_songs.append(song)
-                y += 40
-                # frame_treks._label_text = str(list_songs)
-            # list_songs.remove('.DS_Store')
+
+            for song in list_for_button:
+             song.pack(pady = 10)
+                #создаем новый лейбл с названием музыки и добавляем в окно где отображаются название трэков
+            #     label = ctk.CTkLabel(frame_treks , text = name ,width = 173) 
+            #     #установка позиции лейбла в фрейме , используем place чтобы фрейм не стягивался
+            #     label.place(x = x , y = y)
+            #     #добавляем музыку в список
+            #     list_songs.append(song)
+            #     y += 40
+            #     # frame_treks._label_text = str(list_songs)
+            # # list_songs.remove('.DS_Store')
+
+#лист для хранения кнопок с названиями песен
+list_for_button = []
+
+#лист чтобы контрлилоровать удаление песен
+check_del = [False]
+
+#функция для каждой кнопки которая добавляется в frame_treks, в параметре name_of_button лежит название кнопки на которую нажали
+def change_name_button(name_of_button):
+    #если на кнопку удаления нажали то заходим в условие 
+    if check_del[0] == True:      
+        print(1)   
+        #делаем перебор кнопок чтобы понять на какую кнопку нажали
+        for button in list_for_button:
+            print(2)
+            #если текущая кнопка совпадает с кнопкой которую нажали, удаляем ее из окна и из списка для песен
+            if button._text == name_of_button:
+                # button.configure(text = "Deleting this song")
+                #удаляем кнопку из окна
+                button.destroy()
+                print(name_of_button + ".mp3")
+                #удаляем песню из списка песен
+                list_songs.remove(name_of_button + ".mp3")
+                print(list_songs)
+                #передаем в список для контроля кнопки удаления False чтобы чтобы контрлилоровать удаление песен по нажатию на кнопку удаления
+                check_del[0] = False
+            #если песен уже нет очищаем список кнопко(решение не на долгий срок)
+            elif len(list_songs) < 1:
+                list_for_button.clear()
+
+#если в check_del лежит False то значит на кнопку удаления не нажали 
+def delete_song():
+    #передаем True чтобы сказать что нажали на кнопку 
+    check_del[0] = True
 
 volume = pygame.mixer.music.get_volume()
 list_for_volume = [volume]
@@ -63,7 +104,6 @@ def minus_volume():
         list_for_volume[0] = 0
         pygame.mixer.music.set_volume(list_for_volume[0])
     
-
 
 
 #лист для проверки чтобы не играла одна и тажа песня два раза
@@ -157,7 +197,8 @@ buttom_delete = ctk.CTkButton(master = frame_buttom ,
                               corner_radius = 20, 
                               border_width = 4, 
                               image = image_del_song , 
-                              anchor = "center")
+                              anchor = "center",
+                              command = delete_song)
 buttom_delete.grid(row = 0 , column = 1 , padx = (0 , 25))
 
 buttom_mix = ctk.CTkButton(master = frame_buttom , 

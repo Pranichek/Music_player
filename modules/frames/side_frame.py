@@ -7,12 +7,13 @@ from threading import Thread , Event
 
 pygame.mixer.init()
 
-list_for_count_song = [0]
+# list_for_count_song = [0]
 
 
 event_pause = Event()
 event_pause.set()
 
+#лист для проверки стоп кнопки
 list_check_stop = [0]
 
 def play_song():
@@ -42,7 +43,7 @@ def play_song():
                     #отсонавливаем поток, и он продолжиться чтолько в том случаем когда в evebt_pause будет True(event_pause.set()) , то есть снимем с паузы
                     event_pause.wait()
 
-            # pygame.mixer.music.stop()
+            pygame.mixer.music.stop()
 
             #если в списке гаходится 1 то значит что был нажата кнопка стоп
             if list_check_stop[0] > 0:
@@ -53,13 +54,12 @@ def play_song():
                 #выходим из цикла
                 break
              
-
 #созадем поток для того тчобы музыка могла играть без бесконечной загрузки
 def play_theread():
     play = Thread(target = play_song)
     play.start()
-    
-    
+
+
 #если event_pause False то это значит пауза
 def pause_music():
     #проверяем поставлена ли пауза,находится True значит что пауза не поставлена
