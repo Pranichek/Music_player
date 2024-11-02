@@ -10,6 +10,7 @@ title = dict["main_frame"]["title"]
 main_frame_color = dict["main_frame"]["fg_color"]
 
 app = ctk.CTk(fg_color = main_frame_color)
+app.resizable(width  = False, height = False )
 
 screen_width = app.winfo_screenwidth()
 screen_height = app.winfo_screenheight()
