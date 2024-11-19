@@ -1,1 +1,0 @@
-This is my first deskstop app with customtkinter.This app for listening to music.

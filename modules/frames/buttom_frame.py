@@ -6,7 +6,7 @@ import os
 from customtkinter import filedialog
 import random as r
 from .frame_for_songs import frame_treks , list_songs 
-from .side_frame import event_pause , list_check_stop , label_for_show_name
+from .side_frame import event_pause , list_check_stop , label_for_show_name, list_flipping_song  
 from threading import Thread 
 
 
@@ -25,9 +25,9 @@ def open_songs():
         #listdir - команда возвращает список файлов и папок, находящихся в указанной директории path
         songs = os.listdir(path)
         print(songs)
-        #находим середину фрейма чтобы название песен стояли ровно по середине
-        x = (233 - 173) // 2
-        y = 20
+        # #находим середину фрейма чтобы название песен стояли ровно по середине
+        # x = (233 - 173) // 2
+        # y = 20
         for song in songs:
             #проверка на то что это файл и он имеет расширение ".mp3" (если это так, то добавляем его в список)  
             if song.endswith(".mp3"):
@@ -106,48 +106,70 @@ def minus_volume():
     
 
 
+
 #лист для проверки чтобы не играла одна и тажа песня два раза
 same_song = [""]
 #лист для хранения рандомной песни
 list_for_random_song = [""]
+#list for [rev song
+prev_song = [""]
 def random_song():
-        #если песня была поставлена на паузы и мы опять нажали на играть, то чтобы песня начала играть с последнего момента  остоновки
+    #если песня была поставлена на паузы и мы опять нажали на играть, то чтобы песня начала играть с последнего момента  остоновки
     if not event_pause.is_set():
         #задаем True into event_pause(говорим что сняли песню с паузы)
         event_pause.set()
         pygame.mixer.music.unpause()
     #если музыка не была на паузе то просто отгрываем каждую песню по очереди 
-    
+
     for music in range(len(list_songs)):
-    
-        #выбираем случайную песню из списка играем ее
-        list_for_random_song[0] = r.choice(list_songs)
-        name , file  = list_for_random_song[0].split(".mp3")
-
-
-        #проверяем чтобы эта песня не была одна и таже что и ранее игранная
-        while same_song[0] == list_for_random_song[0]:
-                list_for_random_song[0] = r.choice(list_songs)
-                name , file  = list_for_random_song[0].split(".mp3")
-                if same_song[0] != list_for_random_song[0]:
-                    print(same_song[0] , "first song")
-                    print(list_for_random_song[0] , "second song")
-                    break
-    
-        #меняем текст в лейбле который отображает название текущей песни
-        label_for_show_name.configure(text = name)
-        pygame.mixer.music.load(list_for_random_song[0])
-        pygame.mixer.music.play()
+        if list_flipping_song[0] == "Back":
+            list_flipping_song[0] = False
+            print(1)
+            # if prev_song != " ":
+            #     index_current_song = list_songs.index(prev_song)
+            #     song = list_songs[index_current_song + 1]
+            name , file = prev_song[0].split(".mp3")
+            label_for_show_name.configure(text = name)
+            pygame.mixer.music.load(prev_song[0])
+            pygame.mixer.music.play()
+            print(prev_song[0] , "precvsong")
+        else:
+            #выбираем случайную песню из списка играем ее
+            list_for_random_song[0] = r.choice(list_songs)
+            name , file  = list_for_random_song[0].split(".mp3")
+            #проверяем чтобы эта песня не была одна и таже что и ранее игранная
+            while same_song[0] == list_for_random_song[0]:
+                    list_for_random_song[0] = r.choice(list_songs)
+                    name , file  = list_for_random_song[0].split(".mp3")
+                    if same_song[0] != list_for_random_song[0]:
+                        print(same_song[0] , "first song")
+                        print(list_for_random_song[0] , "second song")
+                        break
+        
+            #меняем текст в лейбле который отображает название текущей песни
+            label_for_show_name.configure(text = name)
+            pygame.mixer.music.load(list_for_random_song[0])
+            pygame.mixer.music.play()
 
         #делаем бесконечный цикл чтобы музыка могла играть , а не сразу остонавливаться
         while pygame.mixer.music.get_busy():   
                     pygame.time.Clock().tick(100)
+                    if list_flipping_song[0] == True:
+                        list_flipping_song[0] = False
+                        pygame.mixer.music.stop()
+                        continue
 
                     #елси включили песню играть , и в моменте постаивли на паузу, то останавливаем песню и ждем пока пауза будет снята
                     if not event_pause.is_set():
                         pygame.mixer.music.pause()
                         #отсонавливаем поток, и он продолжиться чтолько в том случаем когда в evebt_pause будет True(event_pause.set()) , то есть снимем с паузы
                         event_pause.wait()
+                    
+                    if list_flipping_song[0] == "Back":
+                        pygame.mixer.music.stop()
+                        prev_song[0] = same_song[0]
+                        break
+
         
          #если в списке гаходится 1 то значит что был нажата кнопка стоп
         if list_check_stop[0] > 0:
@@ -155,6 +177,7 @@ def random_song():
             pygame.mixer.music.stop()
             #обнуляем список для отслеживания паузы
             list_check_stop[0] = 0
+            label_for_show_name.configure(text = "Stop")
             #выходим из цикла
             break
 
