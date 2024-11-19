@@ -18,7 +18,7 @@ First, clone this repository:
 
 <!-- start:code block -->
 # Clone this repository
-git clone https://github.com/mfts/papermark.git
+git clone https://github.com/Pranichek/Music_player
 cd papermark
 
 # Install dependencies
@@ -30,6 +30,11 @@ cp .env.example .env
 # Initialize the database
 npx prisma generate
 npx prisma db push
+
+```
+    Здесь может быть
+    Ваша реклама
+```
 
 # Run the app
 npm run dev
