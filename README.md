@@ -21,6 +21,10 @@ First, clone this repository:
     Ваша реклама
 ```
 
+<div align="center">
+  <a href="https://docs.python.org/uk/3/library/asyncio.html"><img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/mfts0"></a>
+</div>
+
 
 <!-- start:code block -->
 # Clone this repository
