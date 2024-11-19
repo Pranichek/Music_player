@@ -16,6 +16,12 @@
 
 First, clone this repository:
 
+```
+    Здесь может быть
+    Ваша реклама
+```
+
+
 <!-- start:code block -->
 # Clone this repository
 git clone https://github.com/Pranichek/Music_player
@@ -30,11 +36,6 @@ cp .env.example .env
 # Initialize the database
 npx prisma generate
 npx prisma db push
-
-```
-    Здесь может быть
-    Ваша реклама
-```
 
 # Run the app
 npm run dev
