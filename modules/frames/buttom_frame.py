@@ -39,17 +39,8 @@ def open_songs():
                 list_songs.append(song)
 
             for song in list_for_button:
-             song.pack(pady = 10)
-                #создаем новый лейбл с названием музыки и добавляем в окно где отображаются название трэков
-            #     label = ctk.CTkLabel(frame_treks , text = name ,width = 173) 
-            #     #установка позиции лейбла в фрейме , используем place чтобы фрейм не стягивался
-            #     label.place(x = x , y = y)
-            #     #добавляем музыку в список
-            #     list_songs.append(song)
-            #     y += 40
-            #     # frame_treks._label_text = str(list_songs)
-            # # list_songs.remove('.DS_Store')
-
+                song.pack(pady = 10)
+                
 #лист для хранения кнопок с названиями песен
 list_for_button = []
 

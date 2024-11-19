@@ -27,21 +27,18 @@ def play_song():
         while True:
             for song in list_songs:
                 a += 1
-                print(a)
+                # print(a)
                 if list_flipping_song[0] == "Back":
                     list_flipping_song[0] = False
-                    print(1)
-                    # if prev_song != " ":
-                    #     index_current_song = list_songs.index(prev_song)
-                    #     song = list_songs[index_current_song + 1]
+                    # print(1)
                     name , file = prev_song.split(".mp3")
                     label_for_show_name.configure(text = name)
                     pygame.mixer.music.load(prev_song)
                     pygame.mixer.music.play()
-                    print(prev_song , "prec_song")
-                    print(song, "song")
+                    # print(prev_song , "prec_song")
+                    # print(song, "song")
                 else:
-                    print(2)
+                    # print(2)
                     if prev_song != " ":
                         index_current_song = list_songs.index(prev_song)
                         song = list_songs[index_current_song + 1]
@@ -50,8 +47,8 @@ def play_song():
                     pygame.mixer.music.load(song)
                     pygame.mixer.music.play()
                     prev_song = song
-                    print(prev_song , "prec_song")
-                    print(song, "song")
+                    # print(prev_song , "prec_song")
+                    # print(song, "song")
                 #делаем бесконченый цикл чтобы музыка могла играть , а не сразу остонавливаться
                 #если бы его не было , то музыка сразу после включения останавливалась бы либо переклюичалась на другую
                 while pygame.mixer.music.get_busy():   
@@ -99,17 +96,17 @@ def next_song():
     list_flipping_song[0] = True
     event_pause.set()
     pygame.mixer.music.unpause()
-    print(label_for_show_name._text + ".mp3")
+    # print(label_for_show_name._text + ".mp3")
     if label_for_show_name._text == "Stop":
         list_flipping_song[0] = False
         pass
     else:  
         if list_flipping_song[0] == True and label_for_show_name._text == "Пісня ще не грає":
-            print("заходит")
+            # print("заходит")
             play_theread()
             list_flipping_song[0] = False
         elif label_for_show_name._text + ".mp3" == list_songs[-1]:
-            print("в конце списка")
+            # print("в конце списка")
             play_theread()
             list_flipping_song[0] = False
 
@@ -153,9 +150,6 @@ frame_bar.place(x = 268 , y = 83)
 frame_bar.columnconfigure(0 , weight= 1) # | вертикальные колоны
 frame_bar.rowconfigure((0 , 1, 2, 3,), weight = 1) # - - - - -  горизонтальные колоны
 
-       
-        
-
 #создание кнопок для фрейма frame_bar
 button_play = ctk.CTkButton(master= frame_bar ,
                              text = "",
@@ -169,7 +163,7 @@ button_play = ctk.CTkButton(master= frame_bar ,
                              anchor = "center",
                              command = play_theread)
 
-#в  строке делаем отступ только с низу с помощью такой стурктуры записи pady = (0 , 10)
+#в строке делаем отступ только с низу с помощью такой стурктуры записи pady = (0 , 10)
 button_play.grid(row = 0 , column = 0 , pady = (0 , 10))
 
 button_next_song = ctk.CTkButton(master= frame_bar ,
