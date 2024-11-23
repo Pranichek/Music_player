@@ -22,8 +22,8 @@ First, clone this repository:
 ```
 
 
-<a href="https://docs.python.org/uk/3/library/asyncio.html"><img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/mfts0"></a>
 
+<a href="https://fonts.google.com/selection"><img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/mfts0"></a>
 
 
 <!-- start:code block -->
@@ -44,6 +44,6 @@ npx prisma db push
 # Run the app
 npm run dev
 
-# Open http://localhost:3000 in your browser
-open http://localhost:3000
+# Open https://github.com/Pranichek/Music_player in your browser
+open https://github.com/Pranichek/Music_player
 <!-- end:code block -->

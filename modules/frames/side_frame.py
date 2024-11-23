@@ -7,6 +7,8 @@ from threading import Thread , Event
 
 pygame.mixer.init()
 
+list_for_button = []
+
 
 event_pause = Event()
 event_pause.set()
@@ -39,6 +41,7 @@ def play_song():
                     # print(song, "song")
                 else:
                     # print(2)
+                    print(prev_song , "its a prev")
                     if prev_song != " ":
                         index_current_song = list_songs.index(prev_song)
                         song = list_songs[index_current_song + 1]
@@ -47,8 +50,12 @@ def play_song():
                     pygame.mixer.music.load(song)
                     pygame.mixer.music.play()
                     prev_song = song
-                    # print(prev_song , "prec_song")
-                    # print(song, "song")
+                
+                for button in list_for_button:
+                    if button._text == label_for_show_name._text:
+                        button.configure(fg_color = "orange")
+                    else:
+                        button.configure(fg_color = "#3b8ecf")
                 #делаем бесконченый цикл чтобы музыка могла играть , а не сразу остонавливаться
                 #если бы его не было , то музыка сразу после включения останавливалась бы либо переклюичалась на другую
                 while pygame.mixer.music.get_busy():   
