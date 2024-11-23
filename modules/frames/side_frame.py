@@ -13,10 +13,17 @@ list_for_button = []
 event_pause = Event()
 event_pause.set()
 
+#лист для првоерки сейчас песни по очереди играют или на рандом
+what_event = [None]
+
 #лист для проверки стоп кнопки
 list_check_stop = [0]
 
+index_current_song = [0]
+
 def play_song():
+    what_event[0] = "queue"
+    copy_list_songs = list_songs.copy()
     prev_song = " "
     a = 0
     #если песня была поставлена на паузы и мы опять нажали на играть, то чтобы песня начала играть с последнего момента  остоновки
@@ -26,25 +33,46 @@ def play_song():
         pygame.mixer.music.unpause()
     #если музыка не была на паузе то просто отгрываем каждую песню по очереди 
     else:
+        print(list_songs)
         while True:
             for song in list_songs:
-                a += 1
-                # print(a)
-                if list_flipping_song[0] == "Back":
+                #условие для того чтобы когда играла музыка и законичлась последння, можно было назад перелестнуть
+                if previous_track[0] ==  "nadonazad" and list_flipping_song[0] == "Back":
+                    print("chinazes")
+                    if song == list_songs[-1]:
+                        list_flipping_song[0] = False
+                        index_current_song[0] = list_songs.index(song)
+                        prev_song = list_songs[index_current_song[0] - 1]
+                        name , file = prev_song.split(".mp3")
+                        label_for_show_name.configure(text = name)
+                        pygame.mixer.music.load(prev_song)
+                        pygame.mixer.music.play()
+                        previous_track[0] = ""
+                    else:
+                        continue
+                    
+                elif list_flipping_song[0] == "Back":
                     list_flipping_song[0] = False
-                    # print(1)
                     name , file = prev_song.split(".mp3")
                     label_for_show_name.configure(text = name)
                     pygame.mixer.music.load(prev_song)
                     pygame.mixer.music.play()
-                    # print(prev_song , "prec_song")
-                    # print(song, "song")
                 else:
-                    # print(2)
                     print(prev_song , "its a prev")
                     if prev_song != " ":
-                        index_current_song = list_songs.index(prev_song)
-                        song = list_songs[index_current_song + 1]
+                        try:
+                            index_current_song[0] = list_songs.index(prev_song)
+                        except Exception as error:
+                            if error == ValueError:
+                                index_current_song[0] = copy_list_songs.index(prev_song)
+                                continue
+
+                        if index_current_song[0] + 1 < len(list_songs):
+                            song = list_songs[index_current_song[0] + 1]
+                        else:
+                            print("Це остання пісня в списку.")
+                            exit()
+
                     name , file = song.split(".mp3")
                     label_for_show_name.configure(text = name)
                     pygame.mixer.music.load(song)
@@ -52,10 +80,14 @@ def play_song():
                     prev_song = song
                 
                 for button in list_for_button:
-                    if button._text == label_for_show_name._text:
-                        button.configure(fg_color = "orange")
-                    else:
-                        button.configure(fg_color = "#3b8ecf")
+                    try:
+                        if button._text == label_for_show_name._text:
+                            button.configure(fg_color = "orange")
+                        else:
+                            button.configure(fg_color = "#3b8ecf")
+                    except Exception as e:
+                        print(e)
+                        
                 #делаем бесконченый цикл чтобы музыка могла играть , а не сразу остонавливаться
                 #если бы его не было , то музыка сразу после включения останавливалась бы либо переклюичалась на другую
                 while pygame.mixer.music.get_busy():   
@@ -75,8 +107,8 @@ def play_song():
                     if list_flipping_song[0] == "Back":
                         for song in list_songs:
                             if song == label_for_show_name._text + ".mp3":
-                                index_current_song = list_songs.index(song)
-                                prev_song = list_songs[index_current_song - 1]
+                                index_current_song[0] = list_songs.index(song)
+                                prev_song = list_songs[index_current_song[0] - 1]
                                 print(prev_song, "Это предыдущая песня")
                                 pygame.mixer.music.stop()
                                 break
@@ -91,37 +123,47 @@ def play_song():
                     #выходим из цикла
                     label_for_show_name.configure(text = "Stop")
                     exit()
-                if label_for_show_name._text == list_songs[:-1]:
-                    if not pygame.mixer.music.get_busy():
-                        break
+                # if label_for_show_name._text == list_songs[:-1]:
+                #     if not pygame.mixer.music.get_busy():
+                #         exit()
 
 #лист для прелистывания музыки
 list_flipping_song = [False]
 
 
 def next_song():
+    print(what_event[0])
     list_flipping_song[0] = True
     event_pause.set()
     pygame.mixer.music.unpause()
-    # print(label_for_show_name._text + ".mp3")
-    if label_for_show_name._text == "Stop":
-        list_flipping_song[0] = False
-        pass
-    else:  
-        if list_flipping_song[0] == True and label_for_show_name._text == "Пісня ще не грає":
-            # print("заходит")
-            play_theread()
+    if what_event[0] == "queue" or what_event[0] != "random":
+        # print(label_for_show_name._text + ".mp3")
+        if label_for_show_name._text == "Stop":
             list_flipping_song[0] = False
-        elif label_for_show_name._text + ".mp3" == list_songs[-1]:
-            # print("в конце списка")
-            play_theread()
-            list_flipping_song[0] = False
+            pass
+        else:  
+            if list_flipping_song[0] == True and label_for_show_name._text == "Пісня ще не грає":
+                # print("заходит")
+                play_theread()
+                list_flipping_song[0] = False
+            elif label_for_show_name._text + ".mp3" == list_songs[-1]:
+                # print("в конце списка")
+                play_theread()
+                list_flipping_song[0] = False
 
-
+#лист чтобы когда играла музыка и законичлась последння, можно было назад перелестнуть
+previous_track = [""]
+        
 def prev_song():
     list_flipping_song[0] = "Back"
-    
-        
+    #условие для того чтобы когда играла музыка и законичлась последння, можно было назад перелестнуть
+    if what_event[0] == "queue":
+        if label_for_show_name._text + ".mp3" == list_songs[-1]:
+            if not pygame.mixer.music.get_busy():
+                play_theread()
+                previous_track[0] = "nadonazad"
+                
+
     
 #созадем поток для того тчобы музыка могла играть без бесконечной загрузки
 def play_theread():

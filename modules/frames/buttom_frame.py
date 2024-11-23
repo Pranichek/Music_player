@@ -6,7 +6,7 @@ import os
 from customtkinter import filedialog
 import random as r
 from .frame_for_songs import frame_treks , list_songs 
-from .side_frame import event_pause , list_check_stop , label_for_show_name, list_flipping_song  , list_for_button
+from .side_frame import event_pause , list_check_stop , label_for_show_name, list_flipping_song  , list_for_button, what_event
 from threading import Thread 
 
 
@@ -105,13 +105,14 @@ def minus_volume():
 # #list for [rev song
 
 def random_song():
+    what_event[0] = "random"
+    static_len_list_songs = len(list_songs)
     # #лист для проверки чтобы не играла одна и тажа песня два раза
-    same_song_list = []
+    same_song_list = [None]
     # #лист для хранения рандомной песни
     list_for_random_song = [None]
     #лист для хранения предідущей песни
     prev_song = [""]
-    a = 0
     #если песня была поставлена на паузы и мы опять нажали на играть, то чтобы песня начала играть с последнего момента  остоновки
     if not event_pause.is_set():
         #задаем True into event_pause(говорим что сняли песню с паузы)
@@ -120,17 +121,21 @@ def random_song():
     #если музыка не была на паузе то просто отгрываем каждую песню по очереди 
     else:
         # for count in range(len(list_songs) + a):
-        while len(same_song_list) <= len(list_songs):
+        while True:
             if prev_song[0] != "":
+                print(prev_song[0])
                 name , file  = prev_song[0].split(".mp3")
                 label_for_show_name.configure(text = name)
                 pygame.mixer.music.load(prev_song[0])
                 pygame.mixer.music.play()
+                # prev_song[0] = ""
                 list_for_random_song[0] = prev_song[0]
-                prev_song[0] = ""
-            else:
+            #     prev_song[0] = ""
+            elif list_for_random_song[0] == same_song_list[-1]:
+                if same_song_list[0] == None:
+                    same_song_list = []
+                print(1)
                 list_for_random_song[0] = r.choice(list_songs)
-                print(list_for_random_song[0])
                 for same_song in same_song_list:
                     if same_song == list_for_random_song[0]:
                         #делаем бесконечный цикл пока такая музыка есть в списке
@@ -138,19 +143,35 @@ def random_song():
                             list_for_random_song[0] = r.choice(list_songs)
 
                 same_song_list.append(list_for_random_song[0])
-                print(same_song_list)
-
                 name , file  = list_for_random_song[0].split(".mp3")
                 label_for_show_name.configure(text = name)
                 pygame.mixer.music.load(list_for_random_song[0])
                 pygame.mixer.music.play()
+            elif list_for_random_song[0] != same_song_list[-1]:
+                index_next_song = same_song_list.index(list_for_random_song[0])
+                print(index_next_song)
+                print
+                next_song = same_song_list[index_next_song + 1]
+                list_for_random_song[0] = next_song
+                name , file  = next_song.split(".mp3")
+                label_for_show_name.configure(text = name)
+                pygame.mixer.music.load(next_song)
+                pygame.mixer.music.play()
+            
+            print(same_song_list)
+            print(list_for_random_song[0])
+            prev_song[0] = ""
 
         
             for button in list_for_button:
-                if button._text == label_for_show_name._text:
-                    button.configure(fg_color = "orange")
-                else:
-                    button.configure(fg_color = "#3b8ecf")
+                try:
+                    if button._text == label_for_show_name._text:
+                        button.configure(fg_color = "orange")
+                    else:
+                        button.configure(fg_color = "#3b8ecf")
+                except Exception as error:
+                    print(error)
+            
 
             while pygame.mixer.music.get_busy():  
                 if not event_pause.is_set():
@@ -159,17 +180,26 @@ def random_song():
                     event_pause.wait()
 
                 if list_flipping_song[0] == True:
-                    list_flipping_song[0] = False
-                    pygame.mixer.music.stop()
-                    # count -= 1
-                    continue
+                    if len(same_song_list) >= static_len_list_songs:
+                        pass
+                    else:
+                        list_flipping_song[0] = False
+                        pygame.mixer.music.stop()
+                        # count -= 1
+                        continue
 
                 if list_flipping_song[0] == "Back":
-                    list_flipping_song[0] = False
                     pygame.mixer.music.stop()
-                    prev_song[0] = same_song_list[(same_song_list.index(list_for_random_song[0])) - 1] 
-                    print(prev_song[0] , "prev song")
-                    continue
+                    list_flipping_song[0] = False
+                    index_song = same_song_list.index(list_for_random_song[0])
+                    if index_song < 1:
+                        prev_song[0] = same_song_list[index_song]
+                    else:
+                        prev_song[0] = same_song_list[index_song - 1]
+                    print(prev_song[0])
+                #     pygame.mixer.music.stop()
+                #     prev_song[0] = same_song_list[(same_song_list.index(list_for_random_song[0])) - 1] 
+                #     continue
 
                 if list_check_stop[0] > 0:
                     #останавливаем песни еще раз на всякий случай
@@ -179,9 +209,12 @@ def random_song():
                     label_for_show_name.configure(text = "Stop")
                     #выходим из цикла
                     exit()
+            
 
-            
-            
+            if len(same_song_list) >= static_len_list_songs:
+                print("rrejkgmrelkgreoegrggmrgijj")
+                break
+
             pygame.mixer.music.stop()
         # for music in range(len(list_songs)):
         #     if list_flipping_song[0] == "Back":
