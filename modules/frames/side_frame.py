@@ -49,8 +49,7 @@ def play_song():
                         pygame.mixer.music.play()
                         previous_track[0] = ""
                     else:
-                        continue
-                    
+                        continue 
                 elif list_flipping_song[0] == "Back":
                     list_flipping_song[0] = False
                     name , file = prev_song.split(".mp3")

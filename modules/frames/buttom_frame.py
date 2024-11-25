@@ -1,13 +1,14 @@
 import pygame
+import random as r
+import os
 import customtkinter as ctk
+from threading import Thread 
 from .main_frame import app
 from ..jmages.get_images import image_add_song, image_del_song , image_mix_songs , image_sound_up , image_sound_down
-import os
 from customtkinter import filedialog
-import random as r
 from .frame_for_songs import frame_treks , list_songs 
 from .side_frame import event_pause , list_check_stop , label_for_show_name, list_flipping_song  , list_for_button, what_event
-from threading import Thread 
+
 
 
 pygame.mixer.init()
